@@ -1,0 +1,27 @@
+.log-container {
+  width: 100%;
+  text-align: center;
+
+  .log-content-container {
+    margin: auto;
+    max-height: 300px;
+    max-width: 800px;
+    overflow: scroll;
+    background: #000;
+    color: #fff;
+  }
+
+  .log-content-item {
+    &.error {
+      color: red;
+    }
+
+    &.warning {
+      color: orange;
+    }
+
+    &.info {
+      color: #1677ff;
+    }
+  }
+}

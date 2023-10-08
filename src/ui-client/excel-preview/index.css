@@ -1,0 +1,17 @@
+.excel-preview-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+
+  .ant-tabs {
+    width: 100%;
+    height: 100%;
+  }
+
+  .ant-tabs-content-holder {
+    width: 100%;
+    height: 100%;
+    overflow: scroll;
+  }
+}

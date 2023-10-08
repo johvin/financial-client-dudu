@@ -1,0 +1,19 @@
+.consolidated-summary {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.operate-area {
+  flex: 1 0 auto;
+  margin-top: 24px;
+  padding: 8px;
+  min-height: 200px;
+  background-color: rgba(0, 0, 0, 0.02);
+  border-radius: 8px;
+  /* border: 1px dashed grey; */
+
+  .excel-picker {
+    height: 100%;
+  }
+}

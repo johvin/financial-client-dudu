@@ -1,0 +1,31 @@
+.process-indicator-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .action-bar {
+    margin-top: 16px;
+    width: 200px;
+    justify-content: center;
+  }
+
+  .process-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 16px;
+
+    .task-indicator {
+      display: flex;
+      width: 400px;
+
+      & > *:nth-child(n+2) {
+        flex: 1 1 auto;
+      }
+
+      .ant-progress-line {
+        margin: 0;
+      }
+    }
+  }
+}
