@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from 'react';
-// import { LaptopOutlined, NotificationOutlined, UserOutlined } from '@ant-design/icons';
 import { Breadcrumb, Layout, Menu, theme } from 'antd';
 import { globalNavItems, getNavMenuItems, getFnCompByMenu } from './utils';
 
@@ -53,7 +52,7 @@ export const AppLayout: React.FC = () => {
               padding: 16,
               margin: 0,
               height: '100%',
-              overflow: 'scroll',
+              overflowY: 'auto',
               background: colorBgContainer,
             }}
           >

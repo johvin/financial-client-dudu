@@ -2,7 +2,8 @@ import React, { useCallback, useState } from 'react';
 import { Button, Drawer, Space } from 'antd';
 import { writeFileXLSX, type WorkBook } from 'xlsx';
 import './index.css';
-import { ExcelPreview } from '../excel-preview';
+import { PrettyExcelPreview } from '../excel-preview/pretty';
+// import { SimpleExcelPreview } from '../excel-preview/simple';
 
 interface ExcelExportProps {
   workbook: WorkBook;
@@ -20,7 +21,7 @@ export const ExcelExport: React.FC<ExcelExportProps> = (props) => {
 
   return (
     <div className='excel-export-container'>
-      <Space size='large' style={{ marginTop: 140 }}>
+      <Space size='large'>
         <Button type='primary' onClick={handleDownload} disabled={!props.workbook}>下载 Excel 文件</Button>
         <Button onClick={() => {
           showPreview || setPreview(true);
@@ -37,7 +38,8 @@ export const ExcelExport: React.FC<ExcelExportProps> = (props) => {
         open={showPreview}
         destroyOnClose
       >
-        <ExcelPreview wb={props.workbook} />
+        <PrettyExcelPreview wb={props.workbook} />
+        {/* <SimpleExcelPreview wb={props.workbook} /> */}
       </Drawer>
     </div>
   );

@@ -18,12 +18,12 @@
 
   .ant-upload-list:not(:empty) {
     flex: 1 1 auto;
-    margin-top: 80px;
+    margin-top: 72px;
     padding: 0 8px 8px;
     min-width: 300px;
     max-width: 800px;
     border: 1px dashed #000;
-    overflow-x: hidden;
-    overflow-y: scroll;
+    /* 直接 scroll mac 上及时未超出边界也会展示 scroll 背景区域 */
+    overflow-y: auto;
   }
 }

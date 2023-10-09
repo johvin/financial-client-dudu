@@ -3,11 +3,11 @@ import { Empty, Tabs } from 'antd';
 import { WorkBook, utils } from 'xlsx';
 import './index.css';
 
-interface ExcelPreviewProps {
+export interface SimpleExcelPreviewProps {
   wb?: WorkBook;
 }
 
-export const ExcelPreview: React.FC<ExcelPreviewProps> = ({ wb }) => {
+export const SimpleExcelPreview: React.FC<SimpleExcelPreviewProps> = ({ wb }) => {
   const [curSheet, setCurSheet] = useState(wb?.SheetNames[0] ?? '');
   const curSheetHtml = useMemo(() => {
     if (curSheet && wb) {
@@ -30,7 +30,7 @@ export const ExcelPreview: React.FC<ExcelPreviewProps> = ({ wb }) => {
             label: name,
             key: name,
             children: name === curSheet && (
-              <div className="content-preview" dangerouslySetInnerHTML={{ __html: curSheetHtml }}></div>
+              <div className="content-preview-simple" dangerouslySetInnerHTML={{ __html: curSheetHtml }}></div>
             ),
           };
         })}

@@ -10,9 +10,9 @@ import { ProcessStatus } from '../process-data';
 
 
 export const Summary: React.FC = () => {
-  const [selectFiles, setFiles] = useState<File[]>([]);
   const [curOperateStepIdx, setOperateStepIdx] = useState(0);
   const [processStatus, setProcessStatus] = useState<ProcessStatus>(ProcessStatus.Init);
+  const [selectFiles, setFiles] = useState<File[]>([]);
   const [wb, setWB] = useState<WorkBook>(null);
 
   const showNextBtn = useMemo(() => {
@@ -71,7 +71,7 @@ export const Summary: React.FC = () => {
           <ExcelExport workbook={wb} downloadName='合并报表.xlsx' />
         )}
       </div>
-      <Space style={{ marginTop: 24, justifyContent: 'center' }} size='large'>
+      <Space style={{ justifyContent: 'center' }} size='large'>
         {curOperateStepIdx < operateStepItems.length - 1 && showNextBtn && (<Button type='primary' onClick={handleNext}>下一步</Button>)}
         {curOperateStepIdx > 0 && showPrevBtn && (<Button onClick={handlePrev}>上一步</Button>)}
       </Space>

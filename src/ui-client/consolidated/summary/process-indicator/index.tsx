@@ -99,7 +99,7 @@ export const ProcessIndicator: React.FC<ProcessIndicatorProps> = (props) => {
               );
             })}
           </div>
-          {logs.length > 0 && <SimpleLog style={{ marginTop: 24 }} logs={logs} />}
+          {logs.length > 0 && <SimpleLog logs={logs} />}
         </>
       )}
     </div>
