@@ -1,17 +1,12 @@
 import React, { useMemo, useState } from 'react';
-import { Empty, Table, type TableProps, Tabs, Collapse, FloatButton, Drawer } from 'antd';
-import { SettingOutlined } from '@ant-design/icons';
+import { Empty, Table, type TableProps, Tabs } from 'antd';
 import { WorkBook, utils } from 'xlsx';
 import './index.css';
-import { TableColumnPicker } from './columnPicker';
+import { TableSetting } from './tableSetting';
 
 const calcColWidth = (s: string) => {
-  const nameLen = `${s}`.split('').reduce((a, b) => a += b.codePointAt(0) > 255 ? 2 : 1, 0);
-  let showLen = Math.ceil(nameLen / 2);
-  showLen = showLen < 6 ? 6 : showLen;
-  const fontSize = 14;
-  const paddingLen = 4;
-  return (showLen + paddingLen) * fontSize;
+  const nameLen = s.length;
+  return nameLen < 10 ? 200 : 400;
 };
 
 export interface PrettyExcelPreviewProps {
@@ -20,37 +15,69 @@ export interface PrettyExcelPreviewProps {
 
 export const PrettyExcelPreview: React.FC<PrettyExcelPreviewProps> = ({ wb }) => {
   const [curSheet, setCurSheet] = useState(wb?.SheetNames[0] ?? '');
+  const [enablePagination, setPagination] = useState(true);
   const [fixedCols, setFixedCols] = useState<Record<string, string[]>>({});
-  const [showTableColPicker, setPickerStatus] = useState(false);
+  const [reserveTwoDecimals, setDecimalFormat] = useState(true);
 
-  const curSheetInfo = useMemo((): Required<Pick<TableProps<string[]>, 'dataSource' | 'columns'>> => {
-    if (curSheet && wb) {
-      const aoa = utils.sheet_to_json<string[]>(wb.Sheets[curSheet], { header: 1 });
+  const aoa = useMemo(() => {
+    if (wb && curSheet) {
+      const sheet = wb.Sheets[curSheet];
 
-      if (aoa.length > 0) {
-        return {
-          dataSource: aoa.slice(1).map((row, idx) => ({
-            key: idx + 1,
-            ...row,
-          })),
-          columns: aoa[0].map((title, idx) => ({
-            title,
-            dataIndex: idx,
-            key: idx,
-            // 留一列自适应宽度，但 sheet 切换时效果依然不理想
-            // width: idx < aoa[0].length - 1 ? calcColWidth(title) : undefined,
-            responsive: ['md'],
-            fixed: fixedCols[curSheet]?.includes(title),
-          })),
-        };
+      if (sheet) {
+        return utils.sheet_to_json<string[]>(sheet, { header: 1 });
       }
     }
 
-    return {
-      dataSource: [],
-      columns: [],
-    };
-  }, [curSheet, wb, fixedCols]);
+    return null;
+  }, [wb, curSheet]);
+
+  const columns = useMemo((): TableProps<string[]>['columns'] => {
+    if (!aoa || aoa.length < 1) {
+      return [];
+    }
+
+    return aoa[0].map((title, idx) => ({
+      title,
+      dataIndex: idx,
+      key: idx,
+      width: calcColWidth(title),
+      ellipsis: { showTitle: true },
+      // responsive: ['md'],
+      fixed: fixedCols[curSheet]?.includes(title),
+    }));
+  }, [aoa, fixedCols, curSheet]);
+
+  const tableWidth = useMemo(() => {
+    return columns.reduce((a, b) => {
+      a += b.width as number;
+      return a;
+    }, 0);
+  }, [columns]);
+
+  const dataSource = useMemo((): TableProps<string[]>['dataSource'] => {
+    if (!aoa || aoa.length < 2) {
+      return [];
+    } 
+
+    return aoa.slice(1).map((row, idx) => {
+      const r = {
+        key: idx + 1,
+        ...row,
+      };
+
+      if (reserveTwoDecimals) {
+        row.forEach((val, idx) => {
+          if (typeof val === 'number') {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            r[idx] = Math.round(val * 100) / 100;
+          }
+        });
+      }
+
+      return r;
+    });
+  }, [aoa, reserveTwoDecimals]);
 
   return (
     <div className='excel-preview-container'>
@@ -68,63 +95,29 @@ export const PrettyExcelPreview: React.FC<PrettyExcelPreviewProps> = ({ wb }) =>
               <>
                 <Table
                   key={curSheet}
+                  tableLayout='fixed'
                   bordered
-                  columns={curSheetInfo.columns}
-                  dataSource={curSheetInfo.dataSource}
-                  pagination={{ pageSize: 20 }}
+                  columns={columns}
+                  dataSource={dataSource}
+                  pagination={enablePagination ? { pageSize: 20 } : false}
                   scroll={{ x: true, y: 400 }}
                 />
-                <FloatButton
-                  icon={<SettingOutlined />}
-                  type='primary'
-                  tooltip='自定义表格显示效果'
-                  style={{ right: 60, bottom: 120 }}
-                  onClick={() => {
-                    setPickerStatus(true);
+                <TableSetting
+                  tableName={curSheet}
+                  tableColNames={columns.map(c => c.title as string)}
+                  defaultSelectedCols={fixedCols[curSheet]}
+                  onSelectedCols={(selectedCols) => {
+                    setFixedCols(curCols => {
+                      const nextCols = {
+                        ...curCols,
+                      };
+                      nextCols[curSheet] = selectedCols;
+                      return nextCols;
+                    });
                   }}
+                  onChangePagination={setPagination}
+                  onDecimalFomat={setDecimalFormat}
                 />
-                <Drawer
-                  title='表格显示设置'
-                  placement="right"
-                  width={500}
-                  onClose={() => {
-                    setPickerStatus(false);
-                  }}
-                  open={showTableColPicker}
-                  destroyOnClose
-                >
-                  
-                  <Collapse
-                    key={curSheet}
-                    items={[{
-                      key: 'sort',
-                      label: '数据排序',
-                      children: '待实现',
-                    }, {
-                      key: 'fixed-cols',
-                      label: '自定义表格的固定列',
-                      children: (
-                        <TableColumnPicker
-                          defaultSelectedCols={fixedCols[curSheet] ?? []}
-                          cols={curSheetInfo.columns.map(c => c.title as string)}
-                          onChange={(selectedCols) => {
-                            setFixedCols(curCols => {
-                              const nextCols = {
-                                ...curCols,
-                              };
-                              nextCols[curSheet] = selectedCols;
-                              return nextCols;
-                            });
-                          }}
-                        />
-                      ),
-                    }, {
-                      key: 'pagination',
-                      label: '是否分页',
-                      children: '待实现',
-                    }]}
-                  />
-                </Drawer>
               </>
             ),
           };
