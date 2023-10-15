@@ -2,8 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { Button, Drawer, Space } from 'antd';
 import { writeFileXLSX, type WorkBook } from 'xlsx';
 import './index.css';
-import { PrettyExcelPreview } from '../excel-preview/pretty';
-// import { SimpleExcelPreview } from '../excel-preview/simple';
+import { ExcelPreview } from '../excel-preview';
 
 interface ExcelExportProps {
   workbook: WorkBook;
@@ -38,8 +37,7 @@ export const ExcelExport: React.FC<ExcelExportProps> = (props) => {
         open={showPreview}
         destroyOnClose
       >
-        <PrettyExcelPreview wb={props.workbook} />
-        {/* <SimpleExcelPreview wb={props.workbook} /> */}
+        <ExcelPreview wb={props.workbook} />
       </Drawer>
     </div>
   );

@@ -2,7 +2,10 @@
   width: 100%;
   height: 100%;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  row-gap: 16px;
 
   .ant-tabs {
     width: 100%;
@@ -12,10 +15,13 @@
   .ant-tabs-content-holder {
     width: 100%;
     height: 100%;
+  }
+
+  &.simple .ant-tabs-content-holder {
     overflow: auto;
   }
 
-  .content-preview-simple tr:first-child {
+  &.simple .content-preview-simple tr:first-child {
     font-weight: bold;
   }
 }

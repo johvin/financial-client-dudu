@@ -6,7 +6,7 @@
   .action-bar {
     margin-top: 16px;
     width: 200px;
-    justify-content: center;
+    align-items: center;
   }
 
   .process-indicator {

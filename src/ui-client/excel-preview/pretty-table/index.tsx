@@ -1,20 +1,19 @@
 import React, { useMemo, useState } from 'react';
-import { Empty, Table, type TableProps, Tabs } from 'antd';
+import { Table, type TableProps } from 'antd';
 import { WorkBook, utils } from 'xlsx';
-import './index.css';
 import { TableSetting } from './tableSetting';
 
 const calcColWidth = (s: string) => {
   const nameLen = s.length;
-  return nameLen < 10 ? 200 : 400;
+  return nameLen < 10 ? 100 : 200;
 };
 
-export interface PrettyExcelPreviewProps {
+export interface PrettyTableProps {
   wb?: WorkBook;
+  curSheet: string;
 }
 
-export const PrettyExcelPreview: React.FC<PrettyExcelPreviewProps> = ({ wb }) => {
-  const [curSheet, setCurSheet] = useState(wb?.SheetNames[0] ?? '');
+export const PrettyTable: React.FC<PrettyTableProps> = ({ wb, curSheet }) => {
   const [enablePagination, setPagination] = useState(true);
   const [fixedCols, setFixedCols] = useState<Record<string, string[]>>({});
   const [reserveTwoDecimals, setDecimalFormat] = useState(true);
@@ -57,7 +56,7 @@ export const PrettyExcelPreview: React.FC<PrettyExcelPreviewProps> = ({ wb }) =>
   const dataSource = useMemo((): TableProps<string[]>['dataSource'] => {
     if (!aoa || aoa.length < 2) {
       return [];
-    } 
+    }
 
     return aoa.slice(1).map((row, idx) => {
       const r = {
@@ -80,49 +79,32 @@ export const PrettyExcelPreview: React.FC<PrettyExcelPreviewProps> = ({ wb }) =>
   }, [aoa, reserveTwoDecimals]);
 
   return (
-    <div className='excel-preview-container'>
-      {!wb && <Empty />}
-      {wb && (<Tabs
-        defaultActiveKey={curSheet}
-        type="card"
-        size='small'
-        onTabClick={setCurSheet}
-        items={wb.SheetNames.map((name) => {
-          return {
-            label: name,
-            key: name,
-            children: name === curSheet && (
-              <>
-                <Table
-                  key={curSheet}
-                  tableLayout='fixed'
-                  bordered
-                  columns={columns}
-                  dataSource={dataSource}
-                  pagination={enablePagination ? { pageSize: 20 } : false}
-                  scroll={{ x: true, y: 400 }}
-                />
-                <TableSetting
-                  tableName={curSheet}
-                  tableColNames={columns.map(c => c.title as string)}
-                  defaultSelectedCols={fixedCols[curSheet]}
-                  onSelectedCols={(selectedCols) => {
-                    setFixedCols(curCols => {
-                      const nextCols = {
-                        ...curCols,
-                      };
-                      nextCols[curSheet] = selectedCols;
-                      return nextCols;
-                    });
-                  }}
-                  onChangePagination={setPagination}
-                  onDecimalFomat={setDecimalFormat}
-                />
-              </>
-            ),
-          };
-        })}
-      />)}
-    </div>
+    <>
+      <Table
+        key={curSheet}
+        tableLayout='fixed'
+        bordered
+        columns={columns}
+        dataSource={dataSource}
+        pagination={enablePagination ? { pageSize: 20 } : false}
+        scroll={{ x: true, y: 400 }}
+      />
+      <TableSetting
+        tableName={curSheet}
+        tableColNames={columns.map((c) => c.title as string)}
+        defaultSelectedCols={fixedCols[curSheet]}
+        onSelectedCols={(selectedCols) => {
+          setFixedCols((curCols) => {
+            const nextCols = {
+              ...curCols,
+            };
+            nextCols[curSheet] = selectedCols;
+            return nextCols;
+          });
+        }}
+        onChangePagination={setPagination}
+        onDecimalFomat={setDecimalFormat}
+      />
+    </>
   );
 };

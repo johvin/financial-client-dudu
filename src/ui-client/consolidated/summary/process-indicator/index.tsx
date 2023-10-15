@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Button, Divider, Progress, Space } from 'antd';
 import { PoweroffOutlined } from '@ant-design/icons';
 import './index.css';
@@ -69,8 +69,9 @@ export const ProcessIndicator: React.FC<ProcessIndicatorProps> = (props) => {
   return (
     <div className="process-indicator-container">
       {status !== ProcessStatus.Doing && (
-        <Space className='action-bar' wrap>
-          {`共 ${props.toProcessFiles.length} 个文件待处理`}
+        <Space className='action-bar' direction='vertical'>
+          {result && '已完成处理'}
+          {!result && `共 ${props.toProcessFiles.length} 个文件待处理`}
           <Button
             type='primary'
             icon={<PoweroffOutlined />}
