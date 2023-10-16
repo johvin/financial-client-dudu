@@ -2,30 +2,26 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { Button, Divider, Progress, Space } from 'antd';
 import { PoweroffOutlined } from '@ant-design/icons';
 import './index.css';
-import { ProcessStatus, process } from '../process-data';
-import { sleep } from '../../../utils/time';
+import { sleep } from '../../utils/time';
 import { WorkBook } from 'xlsx';
-import { LogItemInfo, SimpleLog } from '../../../log';
+import { LogItemInfo, SimpleLog } from '../../log';
+import { ProcessStatus, TaskProgress } from '../processsor';
 
 /** 指示器渐变色 */
 const twoColors = { '0%': '#108ee9', '100%': '#87d068' };
 
-export interface TaskProgressInfo {
-  taskName: string;
-  percent: number;
-}
-
-interface ProcessIndicatorProps {
-  toProcessFiles: File[];
+interface ProcessIndicatorProps<Task extends string> {
+  status: ProcessStatus;
+  tasksProgress: TaskProgress<Task>[];
+  logs?: LogItemInfo[];
   onStart?: () => void;
-  onComplete?: (status: ProcessStatus, wb: WorkBook) => void;
+  // onComplete?: (status: ProcessStatus, wb: WorkBook) => void;
 }
 
-export const ProcessIndicator: React.FC<ProcessIndicatorProps> = (props) => {
-  const [status, setStatus] = useState<ProcessStatus>(ProcessStatus.Init);
-  const [tasksProgress, setTasksProgress] = useState<TaskProgressInfo[]>([]);
-  const [result, setResult] = useState<WorkBook>(null);
-  const [logs, setLogs] = useState<LogItemInfo[]>([]);
+export const ProcessIndicator: React.FC<ProcessIndicatorProps<string>> = ({ status, tasksProgress, logs, onStart }) => {
+  // const [status, setStatus] = useState<ProcessStatus>(ProcessStatus.Init);
+  // const [tasksProgress, setTasksProgress] = useState<TaskProgress<string>[]>([]);
+  // const [logs, setLogs] = useState<LogItemInfo[]>([]);
 
   const totalPercent = useMemo(() => {
     let cur = 0, total = 0;
@@ -37,24 +33,24 @@ export const ProcessIndicator: React.FC<ProcessIndicatorProps> = (props) => {
     return Math.round(cur / total * 100);
   }, [tasksProgress]);
 
-  const onStartProcess = useCallback(async () => {
-    props.onStart?.();
+  // const onStartProcess = useCallback(async () => {
+  //   props.onStart?.();
 
-    const [summaryWB, logs] = await process(props.toProcessFiles ?? [], async (progressInfo) => {
-      setStatus(progressInfo.status);
-      setTasksProgress(progressInfo.tasks.map(t => ({
-        taskName: t.name,
-        percent: t.percent,
-      })));
+  //   const [summaryWB, logs] = await process(props.toProcessFiles ?? [], async (progressInfo) => {
+  //     setStatus(progressInfo.status);
+  //     setTasksProgress(progressInfo.tasks.map(t => ({
+  //       taskName: t.name,
+  //       percent: t.percent,
+  //     })));
 
-      await sleep(100);
-    });
+  //     await sleep(100);
+  //   });
 
-    props.onComplete?.(summaryWB ? ProcessStatus.Done : ProcessStatus.Error, summaryWB);
+  //   props.onComplete?.(summaryWB ? ProcessStatus.Done : ProcessStatus.Error, summaryWB);
 
-    setResult(summaryWB);
-    setLogs(logs);
-  }, [props.toProcessFiles]);
+  //   setResult(summaryWB);
+  //   setLogs(logs);
+  // }, [props.toProcessFiles]);
 
   // test ui
   // useEffect(() => {
@@ -70,13 +66,12 @@ export const ProcessIndicator: React.FC<ProcessIndicatorProps> = (props) => {
     <div className="process-indicator-container">
       {status !== ProcessStatus.Doing && (
         <Space className='action-bar' direction='vertical'>
-          {result && '已完成处理'}
-          {!result && `共 ${props.toProcessFiles.length} 个文件待处理`}
+          {status === ProcessStatus.Done && '已完成处理'}
+          {/* {status === ProcessStatus.Init && `共 ${props.toProcessFiles.length} 个文件待处理`} */}
           <Button
             type='primary'
             icon={<PoweroffOutlined />}
-            onClick={onStartProcess}>{status === ProcessStatus.Done ? '再次处理' : '开始处理'}</Button>
-            {/* 暂时用不上终止按钮 */}
+            onClick={onStart}>{status === ProcessStatus.Init ? '开始处理' : '再次处理'}</Button>
         </Space>
       )}
       {status !== ProcessStatus.Init && (
@@ -93,8 +88,8 @@ export const ProcessIndicator: React.FC<ProcessIndicatorProps> = (props) => {
           <div className="process-indicator">
             {tasksProgress.map((task, idx) => {
               return (
-                <Space className='task-indicator' key={`${idx}_${task.taskName}`}>
-                  {task.taskName}
+                <Space className='task-indicator' key={`${idx}_${task.name}`}>
+                  {task.name}
                   <Progress percent={task.percent} />
                 </Space>
               );
