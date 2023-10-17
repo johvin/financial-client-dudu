@@ -64,7 +64,7 @@ export const TableSetting: React.FC<TableSettingProps> = (props) => {
         icon={<SettingOutlined />}
         type='primary'
         tooltip='自定义表格显示效果'
-        style={{ right: 60, bottom: 120 }}
+        style={{ bottom: 100, right: 40 }}
         onClick={() => {
           setShowStatus(true);
         }}

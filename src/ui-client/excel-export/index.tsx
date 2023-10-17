@@ -26,19 +26,13 @@ export const ExcelExport: React.FC<ExcelExportProps> = (props) => {
           showPreview || setPreview(true);
         }}>在线预览</Button>
       </Space>
-      <Drawer
-        title={`在线预览 Excel`}
-        placement="right"
-        maskClosable={false}
-        width={'80vw'}
+      <ExcelPreview
+        wb={props.workbook}
+        open={showPreview}
         onClose={() => {
           setPreview(false);
         }}
-        open={showPreview}
-        destroyOnClose
-      >
-        <ExcelPreview wb={props.workbook} />
-      </Drawer>
+      />
     </div>
   );
 };

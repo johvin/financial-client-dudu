@@ -86,8 +86,8 @@ export const PrettyTable: React.FC<PrettyTableProps> = ({ wb, curSheet }) => {
         bordered
         columns={columns}
         dataSource={dataSource}
-        pagination={enablePagination ? { pageSize: 20 } : false}
-        scroll={{ x: true, y: 400 }}
+        pagination={enablePagination ? { defaultPageSize: 20, showQuickJumper: true, showTotal: (total) => `共 ${total} 项` } : false}
+        scroll={{ x: true, y: 480 }}
       />
       <TableSetting
         tableName={curSheet}

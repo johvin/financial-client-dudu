@@ -21,7 +21,43 @@
     overflow: auto;
   }
 
-  &.simple .content-preview-simple tr:first-child {
-    font-weight: bold;
+  &.simple .content-preview-simple {
+
+    & table {
+      width: max-content;
+      border-spacing: 1px 0;
+    }
+
+    & td {
+      padding: 4px 8px;
+    }
+
+    /* 第一列 fixed & 背景色 */
+    & tr > td:first-child {
+      position: sticky;
+      left: 0;
+      background: #eee;
+    }
+
+    & tr:nth-child(odd) > td {
+      background: #fff;
+    }
+    
+    & tr:nth-child(even) > td {
+      background: #eee;
+    }
+
+    /* 第一行 fixed & 背景色 */
+    & tr:first-child {
+      position: sticky;
+      top: 0;
+      font-weight: bold;
+      z-index: 100;
+      
+      & > td {
+        padding: 8px;
+        background: #d3d3d3;
+      }
+    }
   }
 }
