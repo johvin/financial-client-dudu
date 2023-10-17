@@ -7,7 +7,7 @@ export function readExcel<SheetRow = unknown>(file: File){
     reader.onload = function(e){
       const data = e.target.result;
       const wb = read(data, { type: 'binary' });
-      // With the header: 1 option, the function exports an array of arrays of values.
+      // With the header: 1 option, the function exports an aoa(array of arrays) of values.
       const sheetsData = wb.SheetNames.map(name => utils.sheet_to_json<SheetRow>(wb.Sheets[name], { header: 1 }));
       res(sheetsData);
     };

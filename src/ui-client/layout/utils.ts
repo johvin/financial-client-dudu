@@ -1,6 +1,7 @@
 import type { MenuProps } from 'antd';
 import { consolidatedMenuItems } from '../consolidated/menu';
 import * as Summary from '../consolidated/summary';
+import * as Merge from '../consolidated/merge';
 
 /** 全局导航 */
 export const globalNavItems: MenuProps['items'] = [{
@@ -27,6 +28,7 @@ export const getNavMenuItems = (navKey: string): MenuProps['items'] => {
 
 const fnCompMap: Record<string, React.FC<any>> = {
   'consolidated:summary': Summary.ui,
+  'consolidated:merge': Merge.ui,
 };
 
 /** 获取菜单对应的功能组件 */
