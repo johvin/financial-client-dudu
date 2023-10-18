@@ -22,6 +22,7 @@
   }
 
   &.simple .content-preview-simple {
+    /* fixed column https://dev.to/nicolaserny/table-with-a-fixed-first-column-2c5b */
 
     & table {
       width: max-content;
