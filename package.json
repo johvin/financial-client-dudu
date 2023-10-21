@@ -1,6 +1,6 @@
 {
   "name": "financial-client",
-  "productName": "萌肚肚定制版财务客户端",
+  "productName": "财务客户端",
   "version": "1.0.0",
   "description": "Electron based financial desktop application",
   "main": ".webpack/main",
@@ -50,6 +50,6 @@
     "lodash-es": "^4.17.21",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "xlsx": "^0.19.3"
+    "xlsx": "^0.18.5"
   }
 }
