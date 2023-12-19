@@ -122,37 +122,48 @@ export class SummaryProcessor extends WorkProcessor<ProcessTask> {
     let n = 0;
     // 读取数据
     for await (const file of inputFiles) {
-      const company = file.name
-        .split(/_|\s/)
-        .slice(0, 2)
-        .map((t) => t.trim())
-        .join('_');
-      const [balanceSheet, profitSheet, cashFlowSheet] = await readExcel<
-        string[]
-      >(file);
+      try {
+        const company = file.name
+          .split(/_|\s/)
+          .slice(0, 2)
+          .map((t) => t.trim())
+          .join('_');
+        const sheets = await readExcel<
+          string[]
+        >(file);
 
-      // 前 4 行无用
-      balanceSheet.splice(0, 4);
-      propertyList.push({
-        name: company,
-        // 资产负债表数据一拆二
-        list: balanceSheet.map((it) => it.slice(0, 3)),
-      });
-      debtEquityList.push({
-        name: company,
-        // 资产负债表数据一拆二
-        list: balanceSheet.map((it) => it.slice(3, 6)),
-      });
-      profitSheet.splice(0, 4);
-      profitList.push({
-        name: company,
-        list: profitSheet,
-      });
-      cashFlowSheet.splice(0, 4);
-      cashFlowList.push({
-        name: company,
-        list: cashFlowSheet,
-      });
+        if (sheets.length < 3) {
+          throw new Error('表 sheet 数不足 3个');
+        }
+
+        const [balanceSheet, profitSheet, cashFlowSheet] = sheets;
+
+        // 前 4 行无用
+        balanceSheet.splice(0, 4);
+        propertyList.push({
+          name: company,
+          // 资产负债表数据一拆二
+          list: balanceSheet.map((it) => it.slice(0, 3)),
+        });
+        debtEquityList.push({
+          name: company,
+          // 资产负债表数据一拆二
+          list: balanceSheet.map((it) => it.slice(3, 6)),
+        });
+        profitSheet.splice(0, 4);
+        profitList.push({
+          name: company,
+          list: profitSheet,
+        });
+        cashFlowSheet.splice(0, 4);
+        cashFlowList.push({
+          name: company,
+          list: cashFlowSheet,
+        });
+      } catch (e) {
+        this.logger.error(`处理文件“${file.name}”时报错`);
+        this.logger.log(`错误内容：${JSON.stringify(e.stack)}`);
+      }
 
       await this.progressUpdateAndSync(
         ProcessStatus.Doing,
@@ -208,7 +219,7 @@ export class SummaryProcessor extends WorkProcessor<ProcessTask> {
 function cleanData(sheet: DataList[]) {
   for (const c of sheet) {
     c.list.forEach((it) => {
-      it[0] = (it[0] ?? '').trim();
+      it[0] = String(it[0] ?? '').trim();
     });
     // 项目不存在的过滤掉
     c.list = c.list.filter((it) => it[0].length > 0);
